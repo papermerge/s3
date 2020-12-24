@@ -13,9 +13,19 @@ class S3Storage(FileSystemStorage):
     Use local file system as first cache.
     """
 
-    def __init__(self, bucketname, location=None):
-        self._bucketname = bucketname
-        super().__init__(location=location)
+    def __init__(self, location=None, **kwargs):
+        """
+        ``location`` is ``mglib.path.DocumentPath`` instance
+
+        kwargs['bucketname'] is AWS S3 bucket name
+        """
+        breakpoint()
+        self._bucketname = kwargs.pop('bucketname', None)
+
+        if not self._bucketname:
+            raise ValueError("bucketname argument is empty")
+
+        super().__init__(location=location, **kwargs)
 
     @property
     def bucketname(self):
