@@ -137,6 +137,11 @@ class S3Storage(FileSystemStorage):
             return
 
     def copy_page_hocr(self, src_page_path, dst_page_path):
+
+        abs_path = self.abspath(src_page_path.hocr_url())
+        if not os.path.exists(abs_path):
+            self.download(src_page_path.hocr_url())
+
         super().copy_page_hocr(src_page_path, dst_page_path)
         self._s3copy(
             src=src_page_path.hocr_url(),
@@ -144,6 +149,11 @@ class S3Storage(FileSystemStorage):
         )
 
     def copy_page_txt(self, src_page_path, dst_page_path):
+
+        abs_path = self.abspath(src_page_path.txt_url())
+        if not os.path.exists(abs_path):
+            self.download(src_page_path.txt_url())
+
         super().copy_page_txt(src_page_path, dst_page_path)
         self._s3copy(
             src=src_page_path.txt_url(),
@@ -151,6 +161,10 @@ class S3Storage(FileSystemStorage):
         )
 
     def copy_page_img(self, src_page_path, dst_page_path):
+        abs_path = self.abspath(src_page_path.img_url())
+        if not os.path.exists(abs_path):
+            self.download(src_page_path.img_url())
+
         super().copy_page_img(src_page_path, dst_page_path)
         self._s3copy(
             src=src_page_path.img_url(),
@@ -170,6 +184,13 @@ class S3Storage(FileSystemStorage):
             'Bucket': self.bucketname,
             'Key': src_keyname
         }
-        s3.meta.client.copy(
-            copy_source, self.bucketname, dst_keyname
-        )
+        try:
+            s3.meta.client.copy(
+                copy_source, self.bucketname, dst_keyname
+            )
+        except botocore.exceptions.ClientError:
+            logger.error(
+                f"Error while s3copying"
+                f" {self.bucketname}/{src_keyname} to {dst_keyname}",
+                exc_info=True
+            )
