@@ -73,6 +73,9 @@ class S3Storage(FileSystemStorage):
         Why ?
         Workers run for all papermerge instances, thus they need
         to be instructed about namespace.
+
+        On successful upload returns namespace as string.
+        (in main app code returned namespace is passed to async task)
         """
         local_url = self.abspath(doc_path.url())
         # prefix doc_path with self._namespace
@@ -95,28 +98,33 @@ class S3Storage(FileSystemStorage):
             keyname
         )
 
+        return self.namespace
+
     def download(self, doc_path, **kwargs):
         local_url = self.abspath(doc_path)
         namespace = kwargs.get('namespace', self._namespace)
+
+        if not namespace:
+            logger.error(
+                f"Namespace empty for {doc_path.url()}"
+            )
+            return
+
         keyname = os.path.join(namespace, doc_path.url())
 
         s3_client = boto3.client('s3')
 
-        if not os.path.exists(local_url):
-            logger.debug(f"{local_url} does not exists. Creating.")
-            os.makedirs(
-                local_url, exist_ok=True
-            )
-        else:
-            logger.debug(f"{local_url} already exists.")
+        self.make_sure_path_exists(
+            filepath=self.abspath(doc_path.url())
+        )
 
         keyname = os.path.join(namespace, doc_path.url())
 
         try:
             s3_client.download_file(
-                self.bucketname,
-                keyname,
-                local_url
+                Bucket=self.bucketname,
+                Key=keyname,
+                Filename=local_url
             )
         except botocore.exceptions.ClientError:
             logger.error(
@@ -124,5 +132,5 @@ class S3Storage(FileSystemStorage):
                 f" {self.bucketname}/{keyname} to {local_url}",
                 exc_info=True
             )
-            return False
+            return
 
