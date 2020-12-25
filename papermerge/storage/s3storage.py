@@ -5,6 +5,8 @@ import botocore
 
 from mglib.storage import FileSystemStorage
 
+from .tasks import s3copy
+
 
 logger = logging.getLogger(__name__)
 
@@ -172,25 +174,15 @@ class S3Storage(FileSystemStorage):
         )
 
     def _s3copy(self, src, dst):
-        s3 = boto3.resource('s3')
+
         src_keyname = os.path.join(
             self.namespace, src
         )
         dst_keyname = os.path.join(
             self.namespace, dst
         )
-
-        copy_source = {
-            'Bucket': self.bucketname,
-            'Key': src_keyname
-        }
-        try:
-            s3.meta.client.copy(
-                copy_source, self.bucketname, dst_keyname
-            )
-        except botocore.exceptions.ClientError:
-            logger.error(
-                f"Error while s3copying"
-                f" {self.bucketname}/{src_keyname} to {dst_keyname}",
-                exc_info=True
-            )
+        s3copy.apply_async(kwargs={
+            'bucketname': self.bucketname,
+            'src_keyname': src_keyname,
+            'dst_keyname': dst_keyname
+        })
