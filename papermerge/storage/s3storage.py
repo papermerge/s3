@@ -102,25 +102,25 @@ class S3Storage(FileSystemStorage):
 
         return self.namespace
 
-    def download(self, doc_path, **kwargs):
-        local_url = self.abspath(doc_path)
+    def download(self, doc_path_url, **kwargs):
+        local_url = self.abspath(doc_path_url)
         namespace = kwargs.get('namespace', self._namespace)
 
         if not namespace:
             logger.error(
-                f"Namespace empty for {doc_path.url()}"
+                f"Namespace empty for {doc_path_url}"
             )
             return
 
-        keyname = os.path.join(namespace, doc_path.url())
+        keyname = os.path.join(namespace, doc_path_url)
 
         s3_client = boto3.client('s3')
 
         self.make_sure_path_exists(
-            filepath=self.abspath(doc_path.url())
+            filepath=self.abspath(doc_path_url)
         )
 
-        keyname = os.path.join(namespace, doc_path.url())
+        keyname = os.path.join(namespace, doc_path_url)
 
         try:
             s3_client.download_file(
@@ -136,3 +136,40 @@ class S3Storage(FileSystemStorage):
             )
             return
 
+    def copy_page_hocr(self, src_page_path, dst_page_path):
+        super().copy_page_hocr(src_page_path, dst_page_path)
+        self._s3copy(
+            src=src_page_path.hocr_url(),
+            dst=dst_page_path.hocr_url()
+        )
+
+    def copy_page_txt(self, src_page_path, dst_page_path):
+        super().copy_page_txt(src_page_path, dst_page_path)
+        self._s3copy(
+            src=src_page_path.txt_url(),
+            dst=dst_page_path.txt_url()
+        )
+
+    def copy_page_img(self, src_page_path, dst_page_path):
+        super().copy_page_img(src_page_path, dst_page_path)
+        self._s3copy(
+            src=src_page_path.img_url(),
+            dst=dst_page_path.img_url()
+        )
+
+    def _s3copy(self, src, dst):
+        s3 = boto3.resource('s3')
+        src_keyname = os.path.join(
+            self.namespace, src
+        )
+        dst_keyname = os.path.join(
+            self.namespace, dst
+        )
+
+        copy_source = {
+            'Bucket': self.bucketname,
+            'Key': src_keyname
+        }
+        s3.meta.client.copy(
+            copy_source, self.bucketname, dst_keyname
+        )
