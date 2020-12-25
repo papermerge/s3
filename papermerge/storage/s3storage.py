@@ -66,8 +66,10 @@ class S3Storage(FileSystemStorage):
     def bucketname(self):
         return self._bucketname
 
-    def upload(self, doc_path, **kwargs):
+    def upload(self, doc_path_url, **kwargs):
         """
+        doc_path_url: str - is relative to media root path to
+        file to upload
         kwargs['namespace'] if provided, will be used instead of
         local self._namespace.
         Why ?
@@ -77,12 +79,12 @@ class S3Storage(FileSystemStorage):
         On successful upload returns namespace as string.
         (in main app code returned namespace is passed to async task)
         """
-        local_url = self.abspath(doc_path.url())
+        local_url = self.abspath(doc_path_url)
         # prefix doc_path with self._namespace
 
         # kwarg['namespace'] overrides local namespace
         namespace = kwargs.get('namespace', self._namespace)
-        keyname = os.path.join(namespace, doc_path.url())
+        keyname = os.path.join(namespace, doc_path_url)
         s3_client = boto3.client('s3')
 
         if not os.path.exists(local_url):
