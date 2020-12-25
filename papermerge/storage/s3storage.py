@@ -92,11 +92,11 @@ class S3Storage(FileSystemStorage):
         s3_client.upload_file(
             local_url,
             self.bucketname,
-            doc_path.url()
+            keyname
         )
 
     def download(self, doc_path, **kwargs):
-        local_url = self.abspath(doc_path.url())
+        local_url = self.abspath(doc_path)
         namespace = kwargs.get('namespace', self._namespace)
         keyname = os.path.join(namespace, doc_path.url())
 
