@@ -48,15 +48,23 @@ class S3Storage(FileSystemStorage):
         kwargs['bucketname'] is AWS S3 bucket name
         kwargs['namespace'] is sort of tenant name e.g. name of the
         instance deployed
+
+        Bucketname must always be supplied.
+        Namespace will be supplied in case s3storage runs as part
+        of web app.
+        In case of worker deployment context namepace will be None
+        in __init__. In case of workers, namepace must be provided
+        in download/upload functions. It is so because workers
+        are shared between tenants, thus only at upload/download
+        stage it is know for which tenant that work is performed.
         """
         self._bucketname = kwargs.pop('bucketname', None)
+        # For web app ``namespace`` != None
+        # For worker ``namespace`` is None
         self._namespace = kwargs.pop('namespace', None)
 
         if not self._bucketname:
             raise ValueError("bucketname argument is empty")
-
-        if not self._namespace:
-            raise ValueError("namespace argument is empty")
 
         super().__init__(location=location, **kwargs)
 
