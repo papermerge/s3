@@ -4,6 +4,7 @@ import boto3
 import botocore
 
 from mglib.storage import FileSystemStorage
+from mglib.path import DocumentPath
 
 from .tasks import s3copy
 
@@ -186,10 +187,13 @@ class S3Storage(FileSystemStorage):
             src=src,
             dst=dst
         )
-        self._s3copy(
-            src=src.url(),
-            dst=dst.url()
-        )
+        if isinstance(src, DocumentPath):
+            self._s3copy(
+                src=src.url(),
+                dst=dst.url()
+            )
+        else:
+            self._s3copy(src=src, dst=dst)
 
     def _s3copy(self, src, dst):
 
