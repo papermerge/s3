@@ -181,6 +181,16 @@ class S3Storage(FileSystemStorage):
             dst=dst_page_path.img_url()
         )
 
+    def copy_doc(self, src, dst):
+        super().copy_doc(
+            src=src,
+            dst=dst
+        )
+        self._s3copy(
+            src=src,
+            dst=dst
+        )
+
     def _s3copy(self, src, dst):
 
         src_keyname = os.path.join(
