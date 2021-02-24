@@ -187,8 +187,8 @@ class S3Storage(FileSystemStorage):
             dst=dst
         )
         self._s3copy(
-            src=src,
-            dst=dst
+            src=src.url(),
+            dst=dst.url()
         )
 
     def _s3copy(self, src, dst):
