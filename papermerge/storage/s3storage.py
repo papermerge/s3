@@ -203,8 +203,8 @@ class S3Storage(FileSystemStorage):
         dst_keyname = os.path.join(
             self.namespace, dst
         )
-        s3copy.apply_async(kwargs={
-            'bucketname': self.bucketname,
-            'src_keyname': src_keyname,
-            'dst_keyname': dst_keyname
-        })
+        s3copy(
+            bucketname=self.bucketname,
+            src_keyname=src_keyname,
+            dst_keyname=dst_keyname
+        )
