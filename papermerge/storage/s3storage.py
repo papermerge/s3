@@ -1,11 +1,13 @@
 import os
 import logging
-import boto3
-import botocore
 
 from mglib.storage import FileSystemStorage
 from mglib.path import DocumentPath
 
+from .s3 import (
+    S3,
+    S3Error
+)
 from .tasks import s3copy
 
 
@@ -14,10 +16,10 @@ logger = logging.getLogger(__name__)
 
 class S3Storage(FileSystemStorage):
     """
-    Store documents on AWS S3 file system.
+    Store documents on S3 file system.
     Use local file system as first cache.
 
-    Configuration for S3Storage:
+    Configuration for S3:
 
     # replace default storage with this one
     DEFAULT_FILE_STORAGE = "papermerge.storage.S3Storage"
@@ -96,7 +98,7 @@ class S3Storage(FileSystemStorage):
         # kwarg['namespace'] overrides local namespace
         namespace = kwargs.get('namespace', self._namespace)
         keyname = os.path.join(namespace, doc_path_url)
-        s3_client = boto3.client('s3')
+        s3_client = S3().client
 
         if not os.path.exists(local_url):
             raise ValueError(f"{local_url} path does not exits")
@@ -125,7 +127,7 @@ class S3Storage(FileSystemStorage):
 
         keyname = os.path.join(namespace, doc_path_url)
 
-        s3_client = boto3.client('s3')
+        s3_client = S3().client
 
         self.make_sure_path_exists(
             filepath=self.abspath(doc_path_url)
@@ -139,7 +141,7 @@ class S3Storage(FileSystemStorage):
                 Key=keyname,
                 Filename=local_url
             )
-        except botocore.exceptions.ClientError:
+        except S3Error:
             logger.error(
                 f"Error while downloading "
                 f" {self.bucketname}/{keyname} to {local_url}",

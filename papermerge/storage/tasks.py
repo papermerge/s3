@@ -1,9 +1,7 @@
-import boto3
-import botocore
 import logging
 
 from celery import shared_task
-
+from .client import (S3, S3Error)
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +12,7 @@ def s3copy(
     src_keyname,
     dst_keyname
 ):
-    s3 = boto3.resource('s3')
+    s3 = S3().resource
     copy_source = {
         'Bucket': bucketname,
         'Key': src_keyname
@@ -23,7 +21,7 @@ def s3copy(
         s3.meta.client.copy(
             copy_source, bucketname, dst_keyname
         )
-    except botocore.exceptions.ClientError:
+    except S3Error:
         # Thumbnails are not uploaded to S3 storage.
         # Thus, for every copy operation (for every page) there will
         # be one ClientError Exception because thumbnails

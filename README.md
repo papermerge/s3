@@ -1,20 +1,16 @@
 # Cloud Storage
 
-
 This module enables Papermerge to store documents in the cloud (e.g. S3 cloud
 storage),  this sort of "shared storage" for all papermerge instances (web and
 workers). It is used as part of Papermerge Cloud.
 
 ## Installation
 
-
 Add cloud storage repository as dependency in requirements file:
 
     -e git+ssh://git@github.com/papermerge/cloud-storage.git#egg=cloud-storage
 
-
 ## How to use it?
-
 
 In papermerge.conf.py file set ``DEFAULT_FILE_STORAGE`` and
 ``FILE_STORAGE_KWARGS`` variables:
@@ -42,7 +38,6 @@ upload/download files to S3 bucket specified by ``bucket_name``:
 
 both AWS_... variables need to be set either as part of django settings file
 or as part of environment variables of respective process.
-
 
 
 ## What is FILE_STORAGE_KWARGS['namespace'] ?
