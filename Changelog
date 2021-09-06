@@ -7,4 +7,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Support for any endpoint (e.g. Linode's S3 endpoint)
+- Support for configurable endpoint (e.g. Linode's S3) via environment
+  variables

@@ -1,7 +1,7 @@
 import logging
 
 from celery import shared_task
-from .client import (S3, S3Error)
+from .s3 import (S3, S3Error)
 
 logger = logging.getLogger(__name__)
 
@@ -12,14 +12,13 @@ def s3copy(
     src_keyname,
     dst_keyname
 ):
-    s3 = S3().resource
-    copy_source = {
-        'Bucket': bucketname,
-        'Key': src_keyname
-    }
+    s3_instance = S3()
+    s3_client = s3_instance.client
     try:
-        s3.meta.client.copy(
-            copy_source, bucketname, dst_keyname
+        s3_client.upload_file(
+            src_keyname,
+            bucketname,
+            dst_keyname
         )
     except S3Error:
         # Thumbnails are not uploaded to S3 storage.
