@@ -1,12 +1,11 @@
 from setuptools import setup, find_namespace_packages
 
 setup(
-    name='cloud-storage',
-    version="1.2.0",
     packages=find_namespace_packages(include=['papermerge.*']),
-    license='Proprietary',
-    url='https://papermerge.com/',
-    author='Eugen Ciur',
-    author_email='eugen@papermerge.com',
-    python_requires='>=3.7',
+    install_requires=[
+        "mglib == 1.3.9",
+        "boto3 == 1.18.36",
+        "botocore == 1.21.36",
+        "celery == 5.0.5"
+    ]
 )

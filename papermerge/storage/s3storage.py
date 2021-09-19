@@ -26,8 +26,8 @@ class S3Storage(FileSystemStorage):
 
     # pass bucketname and namespace keys
     PAPERMERGE_FILE_STORAGE_KWARGS = {
-        'bucketname': 'dev_papermerge',
-        'namespace': 'dev_eugen'
+        'bucketname': 'backetname',
+        'namespace': 'namespace'
     }
 
     Whay we need ``namespace`` argument?
