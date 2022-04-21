@@ -151,37 +151,37 @@ class S3Storage(FileSystemStorage):
 
     def copy_page_hocr(self, src_page_path, dst_page_path):
 
-        abs_path = self.abspath(src_page_path.hocr_url())
+        abs_path = self.abspath(src_page_path.hocr_url)
         if not os.path.exists(abs_path):
-            self.download(src_page_path.hocr_url())
+            self.download(src_page_path.hocr_url)
 
         super().copy_page_hocr(src_page_path, dst_page_path)
         self._s3copy(
-            src=src_page_path.hocr_url(),
-            dst=dst_page_path.hocr_url()
+            src=src_page_path.hocr_url,
+            dst=dst_page_path.hocr_url
         )
 
     def copy_page_txt(self, src_page_path, dst_page_path):
 
-        abs_path = self.abspath(src_page_path.txt_url())
+        abs_path = self.abspath(src_page_path.txt_url)
         if not os.path.exists(abs_path):
-            self.download(src_page_path.txt_url())
+            self.download(src_page_path.txt_url)
 
         super().copy_page_txt(src_page_path, dst_page_path)
         self._s3copy(
-            src=src_page_path.txt_url(),
-            dst=dst_page_path.txt_url()
+            src=src_page_path.txt_url,
+            dst=dst_page_path.txt_url
         )
 
     def copy_page_img(self, src_page_path, dst_page_path):
-        abs_path = self.abspath(src_page_path.img_url())
+        abs_path = self.abspath(src_page_path.img_url)
         if not os.path.exists(abs_path):
-            self.download(src_page_path.img_url())
+            self.download(src_page_path.img_url)
 
         super().copy_page_img(src_page_path, dst_page_path)
         self._s3copy(
-            src=src_page_path.img_url(),
-            dst=dst_page_path.img_url()
+            src=src_page_path.img_url,
+            dst=dst_page_path.img_url
         )
 
     def copy_doc(self, src, dst):
