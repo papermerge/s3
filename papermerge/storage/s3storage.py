@@ -1,8 +1,8 @@
 import os
 import logging
 
-from mglib.storage import FileSystemStorage
-from mglib.path import DocumentPath
+from papermerge.core.lib.storage import FileSystemStorage
+from papermerge.core.lib.path import DocumentPath
 
 from .s3 import (
     S3,
@@ -46,7 +46,7 @@ class S3Storage(FileSystemStorage):
 
     def __init__(self, location=None, **kwargs):
         """
-        ``location`` is ``mglib.path.DocumentPath`` instance
+        ``location`` is ``str`` instance
 
         kwargs['bucketname'] is AWS S3 bucket name
         kwargs['namespace'] is sort of tenant name e.g. name of the
