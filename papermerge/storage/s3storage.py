@@ -190,12 +190,19 @@ class S3Storage(FileSystemStorage):
             dst=dst
         )
         if isinstance(src, DocumentPath):
-            self._s3copy(
-                src=src.url(),
-                dst=dst.url()
-            )
+            src_url = src.url()
         else:
-            self._s3copy(src=src, dst=dst)
+            src_url = src
+
+        if isinstance(dst, DocumentPath):
+            dst_url = dst.url()
+        else:
+            dst_url = dst
+
+        self._s3copy(
+            src=src_url,
+            dst=dst_url
+        )
 
     def _s3copy(self, src, dst):
 
