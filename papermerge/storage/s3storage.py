@@ -190,12 +190,12 @@ class S3Storage(FileSystemStorage):
             dst=dst
         )
         if isinstance(src, DocumentPath):
-            src_url = src.url()
+            src_url = src.url
         else:
             src_url = src
 
         if isinstance(dst, DocumentPath):
-            dst_url = dst.url()
+            dst_url = dst.url
         else:
             dst_url = dst
 
