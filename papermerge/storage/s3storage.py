@@ -1,8 +1,8 @@
 import os
 import logging
 
-from mglib.storage import FileSystemStorage
-from mglib.path import DocumentPath
+from papermerge.core.lib.storage import FileSystemStorage
+from papermerge.core.lib.path import DocumentPath
 
 from .s3 import (
     S3,
@@ -46,7 +46,7 @@ class S3Storage(FileSystemStorage):
 
     def __init__(self, location=None, **kwargs):
         """
-        ``location`` is ``mglib.path.DocumentPath`` instance
+        ``location`` is ``str`` instance
 
         kwargs['bucketname'] is AWS S3 bucket name
         kwargs['namespace'] is sort of tenant name e.g. name of the
@@ -151,37 +151,37 @@ class S3Storage(FileSystemStorage):
 
     def copy_page_hocr(self, src_page_path, dst_page_path):
 
-        abs_path = self.abspath(src_page_path.hocr_url())
+        abs_path = self.abspath(src_page_path.hocr_url)
         if not os.path.exists(abs_path):
-            self.download(src_page_path.hocr_url())
+            self.download(src_page_path.hocr_url)
 
         super().copy_page_hocr(src_page_path, dst_page_path)
         self._s3copy(
-            src=src_page_path.hocr_url(),
-            dst=dst_page_path.hocr_url()
+            src=src_page_path.hocr_url,
+            dst=dst_page_path.hocr_url
         )
 
     def copy_page_txt(self, src_page_path, dst_page_path):
 
-        abs_path = self.abspath(src_page_path.txt_url())
+        abs_path = self.abspath(src_page_path.txt_url)
         if not os.path.exists(abs_path):
-            self.download(src_page_path.txt_url())
+            self.download(src_page_path.txt_url)
 
         super().copy_page_txt(src_page_path, dst_page_path)
         self._s3copy(
-            src=src_page_path.txt_url(),
-            dst=dst_page_path.txt_url()
+            src=src_page_path.txt_url,
+            dst=dst_page_path.txt_url
         )
 
     def copy_page_img(self, src_page_path, dst_page_path):
-        abs_path = self.abspath(src_page_path.img_url())
+        abs_path = self.abspath(src_page_path.img_url)
         if not os.path.exists(abs_path):
-            self.download(src_page_path.img_url())
+            self.download(src_page_path.img_url)
 
         super().copy_page_img(src_page_path, dst_page_path)
         self._s3copy(
-            src=src_page_path.img_url(),
-            dst=dst_page_path.img_url()
+            src=src_page_path.img_url,
+            dst=dst_page_path.img_url
         )
 
     def copy_doc(self, src, dst):
@@ -190,12 +190,19 @@ class S3Storage(FileSystemStorage):
             dst=dst
         )
         if isinstance(src, DocumentPath):
-            self._s3copy(
-                src=src.url(),
-                dst=dst.url()
-            )
+            src_url = src.url
         else:
-            self._s3copy(src=src, dst=dst)
+            src_url = src
+
+        if isinstance(dst, DocumentPath):
+            dst_url = dst.url
+        else:
+            dst_url = dst
+
+        self._s3copy(
+            src=src_url,
+            dst=dst_url
+        )
 
     def _s3copy(self, src, dst):
 
